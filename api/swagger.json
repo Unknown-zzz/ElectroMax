@@ -1,0 +1,420 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ElectroMax API",
+    "description": "API REST para la tienda de electrodomésticos ElectroMax. Proyecto universitario - Tecnologías Web 2.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "ElectroMax Dev",
+      "email": "admin@electromax.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost/Proyecto/api",
+      "description": "Servidor local XAMPP"
+    }
+  ],
+  "tags": [
+    { "name": "Productos",   "description": "Operaciones sobre productos" },
+    { "name": "Categorías",  "description": "Listado de categorías" },
+    { "name": "Marcas",      "description": "Listado de marcas" },
+    { "name": "Carrito",     "description": "Gestión del carrito de compras (basado en sesión)" },
+    { "name": "Auth",        "description": "Autenticación de usuarios" },
+    { "name": "Pedidos",     "description": "Creación y consulta de pedidos" }
+  ],
+  "paths": {
+    "/?endpoint=productos": {
+      "get": {
+        "tags": ["Productos"],
+        "summary": "Listar productos",
+        "description": "Retorna todos los productos activos. Se puede filtrar por ID, categoría, búsqueda o destacados.",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["productos"] } },
+          { "name": "id",          "in": "query", "schema": { "type": "integer" }, "description": "ID de un producto específico" },
+          { "name": "categoria_id","in": "query", "schema": { "type": "integer" }, "description": "Filtrar por categoría" },
+          { "name": "q",           "in": "query", "schema": { "type": "string"  }, "description": "Búsqueda por texto" },
+          { "name": "destacados",  "in": "query", "schema": { "type": "boolean" }, "description": "Solo productos destacados" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de productos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductosResponse"
+                }
+              }
+            }
+          },
+          "404": { "description": "Producto no encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/?endpoint=categorias": {
+      "get": {
+        "tags": ["Categorías"],
+        "summary": "Listar categorías",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["categorias"] } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de categorías",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CategoriasResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/?endpoint=marcas": {
+      "get": {
+        "tags": ["Marcas"],
+        "summary": "Listar marcas",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["marcas"] } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de marcas",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MarcasResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/?endpoint=carrito": {
+      "get": {
+        "tags": ["Carrito"],
+        "summary": "Ver carrito",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["carrito"] } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contenido del carrito",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CarritoResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Carrito"],
+        "summary": "Vaciar carrito",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["carrito"] } }
+        ],
+        "responses": {
+          "200": { "description": "Carrito vaciado" }
+        }
+      }
+    },
+    "/?endpoint=carrito&action=agregar": {
+      "post": {
+        "tags": ["Carrito"],
+        "summary": "Agregar producto al carrito",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["carrito"] } },
+          { "name": "action",   "in": "query", "required": true, "schema": { "type": "string", "enum": ["agregar"] } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["producto_id"],
+                "properties": {
+                  "producto_id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Producto agregado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CarritoAddResponse" } } } },
+          "404": { "description": "Producto no encontrado" },
+          "409": { "description": "Sin stock o stock máximo alcanzado" }
+        }
+      }
+    },
+    "/?endpoint=carrito&action=quitar": {
+      "post": {
+        "tags": ["Carrito"],
+        "summary": "Quitar producto del carrito",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["carrito"] } },
+          { "name": "action",   "in": "query", "required": true, "schema": { "type": "string", "enum": ["quitar"] } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["producto_id"],
+                "properties": {
+                  "producto_id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Producto eliminado del carrito" }
+        }
+      }
+    },
+    "/?endpoint=carrito&action=actualizar": {
+      "post": {
+        "tags": ["Carrito"],
+        "summary": "Actualizar cantidad en carrito",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["carrito"] } },
+          { "name": "action",   "in": "query", "required": true, "schema": { "type": "string", "enum": ["actualizar"] } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["producto_id", "cantidad"],
+                "properties": {
+                  "producto_id": { "type": "integer", "example": 1 },
+                  "cantidad":    { "type": "integer", "example": 3, "minimum": 0 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Cantidad actualizada" }
+        }
+      }
+    },
+    "/?endpoint=auth&action=login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Iniciar sesión",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["auth"] } },
+          { "name": "action",   "in": "query", "required": true, "schema": { "type": "string", "enum": ["login"] } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email":    { "type": "string", "format": "email", "example": "admin@electromax.com" },
+                  "password": { "type": "string", "example": "admin123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login exitoso", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserResponse" } } } },
+          "401": { "description": "Credenciales incorrectas" }
+        }
+      }
+    },
+    "/?endpoint=auth&action=registro": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registrar nuevo usuario",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["auth"] } },
+          { "name": "action",   "in": "query", "required": true, "schema": { "type": "string", "enum": ["registro"] } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre", "email", "password"],
+                "properties": {
+                  "nombre":   { "type": "string", "example": "Juan Pérez" },
+                  "email":    { "type": "string", "format": "email", "example": "juan@mail.com" },
+                  "password": { "type": "string", "minLength": 6, "example": "mipass123" },
+                  "telefono": { "type": "string", "example": "+591 71234567" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Usuario creado" },
+          "409": { "description": "Email ya registrado" },
+          "400": { "description": "Datos inválidos" }
+        }
+      }
+    },
+    "/?endpoint=pedidos": {
+      "get": {
+        "tags": ["Pedidos"],
+        "summary": "Listar pedidos (requiere sesión)",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["pedidos"] } }
+        ],
+        "responses": {
+          "200": { "description": "Lista de pedidos" },
+          "401": { "description": "No autenticado" }
+        }
+      },
+      "post": {
+        "tags": ["Pedidos"],
+        "summary": "Crear pedido con el carrito actual",
+        "parameters": [
+          { "name": "endpoint", "in": "query", "required": true, "schema": { "type": "string", "enum": ["pedidos"] } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre", "email", "direccion"],
+                "properties": {
+                  "nombre":    { "type": "string", "example": "Juan Pérez" },
+                  "email":     { "type": "string", "format": "email", "example": "juan@mail.com" },
+                  "telefono":  { "type": "string", "example": "+591 71234567" },
+                  "direccion": { "type": "string", "example": "Av. Principal #123, La Paz" },
+                  "notas":     { "type": "string", "example": "Entregar por la tarde" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Pedido creado exitosamente" },
+          "400": { "description": "Carrito vacío o datos faltantes" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Producto": {
+        "type": "object",
+        "properties": {
+          "id":               { "type": "integer" },
+          "nombre":           { "type": "string" },
+          "descripcion":      { "type": "string" },
+          "precio":           { "type": "number", "format": "float" },
+          "precio_oferta":    { "type": "number", "format": "float", "nullable": true },
+          "stock":            { "type": "integer" },
+          "imagen":           { "type": "string", "nullable": true },
+          "destacado":        { "type": "integer" },
+          "categoria_nombre": { "type": "string" },
+          "marca_nombre":     { "type": "string" }
+        }
+      },
+      "ProductosResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data":    { "type": "array", "items": { "$ref": "#/components/schemas/Producto" } }
+        }
+      },
+      "Categoria": {
+        "type": "object",
+        "properties": {
+          "id":          { "type": "integer" },
+          "nombre":      { "type": "string" },
+          "descripcion": { "type": "string" },
+          "icono":       { "type": "string" }
+        }
+      },
+      "CategoriasResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data":    { "type": "array", "items": { "$ref": "#/components/schemas/Categoria" } }
+        }
+      },
+      "MarcasResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data":    { "type": "array", "items": {
+            "type": "object",
+            "properties": { "id": { "type": "integer" }, "nombre": { "type": "string" } }
+          }}
+        }
+      },
+      "CarritoItem": {
+        "type": "object",
+        "properties": {
+          "id":       { "type": "integer" },
+          "nombre":   { "type": "string" },
+          "precio":   { "type": "number" },
+          "imagen":   { "type": "string", "nullable": true },
+          "cantidad": { "type": "integer" }
+        }
+      },
+      "CarritoResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": { "type": "array", "items": { "$ref": "#/components/schemas/CarritoItem" } },
+              "total": { "type": "number" },
+              "count": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "CarritoAddResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "count": { "type": "integer" },
+              "item":  { "$ref": "#/components/schemas/CarritoItem" }
+            }
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id":     { "type": "integer" },
+              "nombre": { "type": "string" },
+              "email":  { "type": "string" },
+              "rol":    { "type": "string", "enum": ["cliente", "admin"] }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "error":   { "type": "string" }
+        }
+      }
+    }
+  }
+}
