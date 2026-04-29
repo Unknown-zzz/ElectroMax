@@ -4,10 +4,19 @@
     <div class="col-md-10">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold mb-0"><i class="bi bi-box-seam me-2"></i>Productos</h3>
+        <?php if (canDo('editar_productos')): ?>
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProducto" onclick="resetForm()">
           <i class="bi bi-plus-circle me-1"></i> Nuevo
         </button>
+        <?php endif; ?>
       </div>
+
+      <?php if (!canDo('editar_productos')): ?>
+      <div class="alert alert-info border-0 d-flex align-items-center gap-2">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>Modo solo lectura — puedes consultar el catálogo pero no realizar cambios.</span>
+      </div>
+      <?php endif; ?>
 
       <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
@@ -16,7 +25,8 @@
               <thead class="table-dark">
                 <tr>
                   <th>#</th><th>Imagen</th><th>Nombre</th><th>Categoría</th>
-                  <th>Precio</th><th>Oferta</th><th>Stock</th><th>Dest.</th><th>Acciones</th>
+                  <th>Precio</th><th>Oferta</th><th>Stock</th><th>Dest.</th>
+                  <?php if (canDo('editar_productos')): ?><th>Acciones</th><?php endif; ?>
                 </tr>
               </thead>
               <tbody>
@@ -33,13 +43,14 @@
                   <td><?= formatPrice($p['precio']) ?></td>
                   <td><?= $p['precio_oferta'] ? formatPrice($p['precio_oferta']) : '<span class="text-muted">-</span>' ?></td>
                   <td>
-                    <span class="badge <?= $p['stock'] > 0 ? 'bg-success' : 'bg-danger' ?>">
+                    <span class="badge <?= $p['stock'] > 5 ? 'bg-success' : ($p['stock'] > 0 ? 'bg-warning text-dark' : 'bg-danger') ?>">
                       <?= $p['stock'] ?>
                     </span>
                   </td>
                   <td>
                     <?= $p['destacado'] ? '<i class="bi bi-star-fill text-warning"></i>' : '<i class="bi bi-star text-muted"></i>' ?>
                   </td>
+                  <?php if (canDo('editar_productos')): ?>
                   <td>
                     <button class="btn btn-sm btn-outline-primary me-1" onclick="editProducto(<?= htmlspecialchars(json_encode($p), ENT_QUOTES) ?>)">
                       <i class="bi bi-pencil"></i>
@@ -50,6 +61,7 @@
                       <i class="bi bi-trash3"></i>
                     </a>
                   </td>
+                  <?php endif; ?>
                 </tr>
                 <?php endforeach; ?>
               </tbody>
@@ -61,6 +73,7 @@
   </div>
 </div>
 
+<?php if (canDo('editar_productos')): ?>
 <!-- Modal Producto -->
 <div class="modal fade" id="modalProducto" tabindex="-1">
   <div class="modal-dialog modal-lg">
@@ -161,3 +174,4 @@ function editProducto(p) {
   new bootstrap.Modal(document.getElementById('modalProducto')).show();
 }
 </script>
+<?php endif; ?>

@@ -20,7 +20,9 @@ class AuthController extends Controller {
                 $_SESSION['user_nombre'] = $user['nombre'];
                 $_SESSION['user_rol']    = $user['rol'];
                 $_SESSION['flash']       = ['type' => 'success', 'msg' => '¡Bienvenido, ' . $user['nombre'] . '!'];
-                $this->redirect($user['rol'] === 'admin' ? 'admin/dashboard' : 'store/index');
+                $dest = in_array($user['rol'], ['admin','vendedor','inventario'])
+                    ? 'admin/dashboard' : 'store/index';
+                $this->redirect($dest);
                 return;
             }
             $_SESSION['flash'] = ['type' => 'danger', 'msg' => 'Credenciales incorrectas.'];

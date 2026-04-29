@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "c:\\Users\\Jonathan\\.claude\\projects\\c--xampp-htdocs-ElectroMax\\memory"
+    ],
+    "allow": [
+      "Bash(php -l app/core/helpers.php)",
+      "Bash(php -l app/controllers/AdminController.php)",
+      "Bash(php -l app/views/admin/dashboard.php)",
+      "Bash(php -l app/views/admin/sidebar.php)"
+    ]
+  }
+}

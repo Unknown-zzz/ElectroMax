@@ -13,19 +13,23 @@
 <!-- Topbar -->
 <div class="topbar">
   <div class="container d-flex justify-content-between align-items-center">
-    <span><i class="bi bi-telephone-fill me-1"></i> +591 2-123456 &nbsp;|&nbsp; <i class="bi bi-envelope-fill me-1"></i> ventas@electromax.com</span>
-    <div>
+    <span class="topbar-contact">
+      <i class="bi bi-telephone-fill me-1"></i> +591 2-123456
+      &nbsp;|&nbsp;
+      <i class="bi bi-envelope-fill me-1"></i> ventas@electromax.com
+    </span>
+    <div class="ms-auto">
       <?php if (isLoggedIn()): ?>
-        <span class="me-2"><i class="bi bi-person-circle"></i> <?= e($_SESSION['user_nombre']) ?></span>
-        <?php if (isAdmin()): ?>
-          <a href="<?= APP_URL ?>/index.php?r=admin/dashboard" class="topbar-link me-2"><i class="bi bi-gear-fill"></i> Admin</a>
+        <span class="me-2 d-none d-sm-inline"><i class="bi bi-person-circle"></i> <?= e($_SESSION['user_nombre']) ?></span>
+        <?php if (isStaff()): ?>
+          <a href="<?= APP_URL ?>/index.php?r=admin/dashboard" class="topbar-link me-2"><i class="bi bi-gear-fill"></i> <span class="d-none d-sm-inline">Panel</span></a>
         <?php else: ?>
-          <a href="<?= APP_URL ?>/index.php?r=order/history" class="topbar-link me-2"><i class="bi bi-bag-check"></i> Mis Pedidos</a>
+          <a href="<?= APP_URL ?>/index.php?r=order/history" class="topbar-link me-2"><i class="bi bi-bag-check"></i> <span class="d-none d-sm-inline">Mis Pedidos</span></a>
         <?php endif; ?>
-        <a href="<?= APP_URL ?>/index.php?r=auth/logout" class="topbar-link"><i class="bi bi-box-arrow-right"></i> Salir</a>
+        <a href="<?= APP_URL ?>/index.php?r=auth/logout" class="topbar-link"><i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">Salir</span></a>
       <?php else: ?>
-        <a href="<?= APP_URL ?>/index.php?r=auth/login" class="topbar-link me-2"><i class="bi bi-person"></i> Iniciar Sesión</a>
-        <a href="<?= APP_URL ?>/index.php?r=auth/register" class="topbar-link"><i class="bi bi-person-plus"></i> Registrarse</a>
+        <a href="<?= APP_URL ?>/index.php?r=auth/login" class="topbar-link me-2"><i class="bi bi-person"></i> <span class="d-none d-sm-inline">Iniciar Sesión</span></a>
+        <a href="<?= APP_URL ?>/index.php?r=auth/register" class="topbar-link"><i class="bi bi-person-plus"></i> <span class="d-none d-sm-inline">Registrarse</span></a>
       <?php endif; ?>
     </div>
   </div>

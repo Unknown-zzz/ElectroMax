@@ -51,9 +51,13 @@ $routes = [
     'admin/categorias'      => [$admin,   'categorias'],
     'admin/categoria_save'  => [$admin,   'categoriaSave'],
     'admin/categoria_delete'=> [$admin,   'categoriaDelete'],
-    'admin/marcas'          => [$admin,   'marcas'],
-    'admin/marca_save'      => [$admin,   'marcaSave'],
-    'admin/marca_delete'    => [$admin,   'marcaDelete'],
+    'admin/marcas'           => [$admin,   'marcas'],
+    'admin/marca_save'       => [$admin,   'marcaSave'],
+    'admin/marca_delete'     => [$admin,   'marcaDelete'],
+    'admin/usuarios'         => [$admin,   'usuarios'],
+    'admin/usuario_rol_save' => [$admin,   'usuarioRolSave'],
+    'admin/usuario_toggle'   => [$admin,   'usuarioToggle'],
+    'admin/chat'             => [$admin,   'chat'],
 ];
 
 $r = $_GET['r'] ?? 'store/index';
