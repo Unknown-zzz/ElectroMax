@@ -59,9 +59,13 @@ class OrderController extends Controller {
     public function history(): void {
         requireLogin();
         $pedidos    = $this->order->byUsuario((int)$_SESSION['user_id']);
+        $detalles   = [];
+        foreach ($pedidos as $p) {
+            $detalles[$p['id']] = $this->order->getDetalle($p['id']);
+        }
         $categorias = $this->category->all();
         $this->render('layouts/header', ['title' => 'Mis Pedidos', 'categorias' => $categorias]);
-        $this->render('checkout/history', compact('pedidos'));
+        $this->render('checkout/history', compact('pedidos', 'detalles'));
         $this->render('layouts/footer');
     }
 }

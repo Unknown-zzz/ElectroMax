@@ -486,6 +486,9 @@
 
         <!-- Users panel -->
         <div id="chat-users-panel">
+          <div style="padding: 0 8px 12px 8px;">
+            <input type="text" id="user-search" placeholder="Buscar usuario..." style="width: 100%; padding: 6px 8px; border: 1px solid #3f4147; border-radius: 4px; background: #383a40; color: #dbdee1; font-size: 12px;">
+          </div>
           <div class="up-section-label" id="up-online-lbl">En línea — 0</div>
           <div id="up-online-list"></div>
           <div class="up-section-label" style="margin-top:12px" id="up-offline-lbl">Desconectados — 0</div>
@@ -886,6 +889,40 @@ const _abrirCanal = abrirCanal;
 abrirCanal = function(ch) { _abrirCanal(ch); cerrarSidebarMobile(); };
 const _abrirDm = abrirDm;
 abrirDm = function(u) { _abrirDm(u); cerrarSidebarMobile(); };
+
+// ── User search ─────────────────────────────────────────────────────────────
+const userSearchInput = document.getElementById('user-search');
+if (userSearchInput) {
+  userSearchInput.addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase().trim();
+    const onlineItems = document.querySelectorAll('#up-online-list .up-item');
+    const offlineItems = document.querySelectorAll('#up-offline-list .up-item');
+
+    let visibleOnline = 0, visibleOffline = 0;
+
+    onlineItems.forEach(item => {
+      const name = item.querySelector('.up-name')?.textContent.toLowerCase() || '';
+      const isVisible = name.includes(query);
+      item.style.display = isVisible ? 'flex' : 'none';
+      if (isVisible) visibleOnline++;
+    });
+
+    offlineItems.forEach(item => {
+      const name = item.querySelector('.up-name')?.textContent.toLowerCase() || '';
+      const isVisible = name.includes(query);
+      item.style.display = isVisible ? 'flex' : 'none';
+      if (isVisible) visibleOffline++;
+    });
+
+    document.getElementById('up-online-lbl').textContent = `En línea — ${visibleOnline}`;
+    document.getElementById('up-offline-lbl').textContent = `Desconectados — ${visibleOffline}`;
+
+    const onlineList = document.getElementById('up-online-list');
+    const offlineList = document.getElementById('up-offline-list');
+    onlineList.style.display = visibleOnline > 0 ? 'block' : 'none';
+    offlineList.style.display = visibleOffline > 0 ? 'block' : 'none';
+  });
+}
 
 // ── Boot ─────────────────────────────────────────────────────────────────
 conectar();
