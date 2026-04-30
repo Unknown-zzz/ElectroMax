@@ -106,6 +106,8 @@
 
 <script>
 function abrirDetallePedidoCliente(pedido, detalles) {
+  console.log('Pedido:', pedido);
+  console.log('Detalles:', detalles);
   const badges = {'pendiente':'warning','procesando':'info','enviado':'primary','entregado':'success','cancelado':'danger'};
   const badge = badges[pedido.estado] || 'secondary';
 
@@ -128,15 +130,21 @@ function abrirDetallePedidoCliente(pedido, detalles) {
 
   const prodDiv = document.getElementById('detPedidoProductos');
   if (detalles && Array.isArray(detalles) && detalles.length > 0) {
-    prodDiv.innerHTML = detalles.map(det => `
-      <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-        <div>
-          <div class="fw-bold">${det.nombre_producto || '—'}</div>
-          <small class="text-muted">Cantidad: ${det.cantidad || 1}</small>
+    prodDiv.innerHTML = detalles.map(det => {
+      const nombre = det.nombre_producto || det.nombre || '—';
+      const cantidad = parseInt(det.cantidad) || 1;
+      const precio = parseFloat(det.precio) || 0;
+      const subtotal = (precio * cantidad).toFixed(2);
+      return `
+        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+          <div>
+            <div class="fw-bold">${nombre}</div>
+            <small class="text-muted">Cantidad: ${cantidad}</small>
+          </div>
+          <div class="text-end fw-bold">$${subtotal}</div>
         </div>
-        <div class="text-end fw-bold">$${(parseFloat(det.precio) * (det.cantidad || 1)).toFixed(2)}</div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   } else {
     prodDiv.innerHTML = '<p class="text-muted">Sin información de productos disponible</p>';
   }
