@@ -5,8 +5,8 @@ const mysql = require('mysql2/promise');
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const WS_PORT  = parseInt(process.env.WS_PORT  || '8181');
-const DB_HOST  = process.env.DB_HOST  || 'localhost';
-const DB_PORT  = parseInt(process.env.DB_PORT  || '3306');
+const DB_HOST  = process.env.DB_HOST  || '127.0.0.1';
+const DB_PORT  = parseInt(process.env.DB_PORT  || '3309');
 const DB_NAME  = process.env.DB_NAME  || 'electromax';
 const DB_USER  = process.env.DB_USER  || 'root';
 const DB_PASS  = process.env.DB_PASS  || '';

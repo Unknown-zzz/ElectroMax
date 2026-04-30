@@ -2,10 +2,12 @@
 class OrderController extends Controller {
     private Order $order;
     private Category $category;
+    private Product $product;
 
     public function __construct() {
         $this->order    = new Order();
         $this->category = new Category();
+        $this->product  = new Product();
     }
 
     public function checkout(): void {
@@ -61,7 +63,12 @@ class OrderController extends Controller {
         $pedidos    = $this->order->byUsuario((int)$_SESSION['user_id']);
         $detalles   = [];
         foreach ($pedidos as $p) {
-            $detalles[$p['id']] = $this->order->getDetalle($p['id']);
+            $items = $this->order->getDetalle($p['id']);
+            foreach ($items as &$item) {
+                $prod = $this->product->find((int)$item['producto_id']);
+                $item['nombre_producto'] = $prod['nombre'] ?? 'Producto no disponible';
+            }
+            $detalles[$p['id']] = $items;
         }
         $categorias = $this->category->all();
         $this->render('layouts/header', ['title' => 'Mis Pedidos', 'categorias' => $categorias]);
